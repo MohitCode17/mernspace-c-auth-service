@@ -1,6 +1,7 @@
 import { Repository } from "typeorm";
 import { User } from "../entity/User";
 import { UserData } from "../types";
+import createHttpError from "http-errors";
 
 // Define the user service
 export class UserService {
@@ -9,13 +10,19 @@ export class UserService {
 
   // Implement the create method
   async create({ firstName, lastName, email, password }: UserData) {
-    // Get the user repository
+    try {
+      // Save the user to the database
+      return await this.userRepository.save({
+        firstName,
+        lastName,
+        email,
+        password,
+      });
 
-    // This is also coupled with repository, without repository usersevice is not working.
-    // We should use dependency injection to inject the repository into the service.
-    // const userRepository = AppDataSource.getRepository(User);
-
-    // Save the user to the database
-    await this.userRepository.save({ firstName, lastName, email, password });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err) {
+      const error = createHttpError(500, "Failed to create user");
+      throw error;
+    }
   }
 }
