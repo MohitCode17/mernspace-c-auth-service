@@ -151,6 +151,28 @@ describe("POST /auth/register", () => {
       expect(users[0].password).toHaveLength(60);
       expect(users[0].password).toMatch(/^\$2[ayb]\$\d+\$/);
     });
+
+    it("should return 404 status code if email is already exists", async () => {
+      // Arrange
+      const userData = {
+        firstName: "Mohit",
+        lastName: "Gupta",
+        email: "mohit@mern.space",
+        password: "password",
+      };
+      // Create a user in the database
+      const userRepository = connection.getRepository(User);
+      await userRepository.save({ ...userData, role: ROLES.CUSTOMER });
+
+      const users = await userRepository.find();
+
+      // Act
+      const response = await request(app).post("/auth/register").send(userData);
+
+      // Assert
+      expect(response.statusCode).toBe(404);
+      expect(users).toHaveLength(1);
+    });
   });
 
   // Sad path
