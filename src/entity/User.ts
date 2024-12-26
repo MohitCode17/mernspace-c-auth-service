@@ -16,4 +16,7 @@ export class User {
 
   @Column() // Column in the database
   password: string; // Password of the user
+
+  @Column()
+  role: string; // Role of the user
 }

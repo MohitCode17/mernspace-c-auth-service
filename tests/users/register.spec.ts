@@ -3,7 +3,6 @@ import app from "../../src/app";
 import { User } from "../../src/entity/User";
 import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
-import { truncateTables } from "../utils";
 
 describe("POST /auth/register", () => {
   // Create a connection to the database
@@ -18,7 +17,11 @@ describe("POST /auth/register", () => {
   // Run this before each test
   beforeEach(async () => {
     // Clear the database, so that we can start fresh for each test case.
-    await truncateTables(connection);
+    // Why not truncateTables?
+    // Because truncateTables only truncates the tables, but does not re-build the database schema.
+    // So, we drop the database and re-synchronize it.
+    await connection.dropDatabase(); // Drop the database
+    await connection.synchronize(); // Sync the database
   });
 
   // Run this after all tests
@@ -104,6 +107,27 @@ describe("POST /auth/register", () => {
       const user = await userRepository.find();
       // Check if the id returned in the response is the same as the id in the database
       expect((response.body as Record<string, string>).id).toBe(user[0].id);
+    });
+
+    it("should assign a customer role", async () => {
+      // Arrange
+      const userData = {
+        firstName: "Mohit",
+        lastName: "Gupta",
+        email: "mohit@mern.space",
+        password: "password",
+      };
+
+      // Act
+      await request(app).post("/auth/register").send(userData);
+
+      // Assert
+      const userRepository = connection.getRepository(User);
+      const user = await userRepository.find();
+
+      // Assert
+      expect(user[0]).toHaveProperty("role");
+      expect(user[0].role).toBe("customer");
     });
   });
 
