@@ -2,6 +2,7 @@ import { Repository } from "typeorm";
 import { User } from "../entity/User";
 import { UserData } from "../types";
 import createHttpError from "http-errors";
+import { ROLES } from "../constants";
 
 // Define the user service
 export class UserService {
@@ -17,7 +18,7 @@ export class UserService {
         lastName,
         email,
         password,
-        role: "customer",
+        role: ROLES.CUSTOMER,
       });
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

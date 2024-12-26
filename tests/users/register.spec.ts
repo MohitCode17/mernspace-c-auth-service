@@ -3,6 +3,7 @@ import app from "../../src/app";
 import { User } from "../../src/entity/User";
 import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
+import { ROLES } from "../../src/constants";
 
 describe("POST /auth/register", () => {
   // Create a connection to the database
@@ -127,7 +128,7 @@ describe("POST /auth/register", () => {
 
       // Assert
       expect(user[0]).toHaveProperty("role");
-      expect(user[0].role).toBe("customer");
+      expect(user[0].role).toBe(ROLES.CUSTOMER);
     });
   });
 
