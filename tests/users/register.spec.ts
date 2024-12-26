@@ -85,6 +85,26 @@ describe("POST /auth/register", () => {
       expect(user[0].lastName).toBe(userData.lastName); //Expect the last name to be the same
       expect(user[0].email).toBe(userData.email); // Expect the email to be the same
     });
+
+    it("should return an id of the created user", async () => {
+      // Arrange
+      const userData = {
+        firstName: "Mohit",
+        lastName: "Gupta",
+        email: "mohit@mern.space",
+        password: "password",
+      };
+
+      // Act
+      const response = await request(app).post("/auth/register").send(userData);
+
+      // Assert
+      expect(response.body).toHaveProperty("id");
+      const userRepository = connection.getRepository(User);
+      const user = await userRepository.find();
+      // Check if the id returned in the response is the same as the id in the database
+      expect((response.body as Record<string, string>).id).toBe(user[0].id);
+    });
   });
 
   // Sad path
