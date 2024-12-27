@@ -2,19 +2,23 @@ import { NextFunction, Response } from "express";
 import { RegisterUserRequest } from "../types";
 import { UserService } from "../services/UserService";
 import { Logger } from "winston";
+import { validationResult } from "express-validator";
 
 export class AuthController {
-  // userService: UserService;
-
   // Constructor injection of the UserService, Logger
   constructor(
     private userService: UserService,
     private logger: Logger,
-  ) {
-    // this.userService = userService;
-  }
+  ) {}
 
   async register(req: RegisterUserRequest, res: Response, next: NextFunction) {
+    // Validate the request
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      res.status(400).json({ errors: result.array() });
+      return;
+    }
+
     // Get the user data from the request body
     const { firstName, lastName, email, password } = req.body;
 
