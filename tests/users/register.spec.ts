@@ -4,6 +4,7 @@ import { User } from "../../src/entity/User";
 import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
 import { ROLES } from "../../src/constants";
+import { isJwt } from "../utils";
 
 describe("POST /auth/register", () => {
   // Create a connection to the database
@@ -172,6 +173,44 @@ describe("POST /auth/register", () => {
       // Assert
       expect(response.statusCode).toBe(404);
       expect(users).toHaveLength(1);
+    });
+
+    it("should return access token and refresh token inside a cookie", async () => {
+      // Arrange
+      const userData = {
+        firstName: "Mohit",
+        lastName: "Gupta",
+        email: "mohit@mern.space",
+        password: "password",
+      };
+
+      // Act
+      const response = await request(app).post("/auth/register").send(userData);
+
+      // Assert
+      let accessToken: string | null = null;
+      let refreshToken: string | null = null;
+
+      // Normalize `cookies` to always be an array
+      const cookies = Array.isArray(response.headers["set-cookie"])
+        ? response.headers["set-cookie"]
+        : [response.headers["set-cookie"]].filter(Boolean);
+
+      cookies.forEach((cookie) => {
+        if (typeof cookie === "string") {
+          if (cookie.startsWith("accessToken=")) {
+            accessToken = cookie.split(";")[0].split("=")[1];
+          }
+          if (cookie.startsWith("refreshToken=")) {
+            refreshToken = cookie.split(";")[0].split("=")[1];
+          }
+        }
+      });
+      expect(accessToken).not.toBeNull();
+      expect(refreshToken).not.toBeNull();
+      // Check if the tokens are JWT
+      expect(isJwt(accessToken)).toBeTruthy();
+      expect(isJwt(refreshToken)).toBeTruthy();
     });
   });
 
