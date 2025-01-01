@@ -122,10 +122,40 @@ export class AuthController {
         return;
       }
 
+      // Generate the payload for the access token
+      const payload: JwtPayload = {
+        sub: String(user.id),
+        role: user.role,
+      };
+
+      // Generate the access token
+      const accessToken = this.tokenService.generateAccessToken(payload);
+
+      // Persist the refresh token in the database
+      const newRefreshToken = await this.tokenService.persistRefreshToken(user);
+
+      // Generate the refresh token
+      const refreshToken = this.tokenService.generateRefreshToken({
+        ...payload,
+        id: newRefreshToken.id,
+      });
+
+      // Set the cookies
+      res.cookie("accessToken", accessToken, {
+        domain: "localhost",
+        sameSite: "strict",
+        maxAge: 1000 * 60 * 60, // 1 hour
+        httpOnly: true, // This cookie can't be accessed by JavaScript
+      });
+
+      res.cookie("refreshToken", refreshToken, {
+        domain: "localhost",
+        sameSite: "strict",
+        maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
+        httpOnly: true, // This cookie can't be accessed by JavaScript
+      });
+
       res.status(400).send();
-      // Generate tokens
-      // Add tokens to cookies
-      // Return the response with login user id.
     } catch (err) {
       next(err);
       return;
