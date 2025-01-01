@@ -154,7 +154,7 @@ export class AuthController {
         maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
         httpOnly: true, // This cookie can't be accessed by JavaScript
       });
-
+      this.logger.info("User has been logged in", { id: user.id });
       res.status(200).json({ id: user.id });
     } catch (err) {
       next(err);
