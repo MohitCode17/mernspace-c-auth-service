@@ -5,6 +5,8 @@ import { Logger } from "winston";
 import { JwtPayload } from "jsonwebtoken";
 import { validationResult } from "express-validator";
 import { TokenService } from "../services/TokenService";
+import createHttpError from "http-errors";
+import { CredentialService } from "../services/CredentialService";
 
 export class AuthController {
   // Constructor injection of the UserService, Logger
@@ -12,6 +14,7 @@ export class AuthController {
     private userService: UserService,
     private logger: Logger,
     private tokenService: TokenService,
+    private credentialService: CredentialService,
   ) {}
 
   async register(req: RegisterUserRequest, res: Response, next: NextFunction) {
@@ -77,6 +80,45 @@ export class AuthController {
       });
 
       res.status(201).json({ id: user.id });
+    } catch (err) {
+      next(err);
+      return;
+    }
+  }
+
+  async login(req: RegisterUserRequest, res: Response, next: NextFunction) {
+    // Get data from body
+    const { email, password } = req.body;
+
+    this.logger.debug("New request to login a user", {
+      email,
+      password: "********",
+    });
+
+    try {
+      // Check if user email is exists in database
+      const user = await this.userService.findByEmail(email);
+      if (!user) {
+        const error = createHttpError(400, "Email or password does not match.");
+        next(error);
+        return;
+      }
+      // Compare the password
+      const passwordMatch = this.credentialService.comparePassword(
+        password,
+        user.password,
+      );
+
+      if (!passwordMatch) {
+        const error = createHttpError(400, "Email or password does not match.");
+        next(error);
+        return;
+      }
+
+      res.status(400).send();
+      // Generate tokens
+      // Add tokens to cookies
+      // Return the response with login user id.
     } catch (err) {
       next(err);
       return;

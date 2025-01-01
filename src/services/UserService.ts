@@ -40,4 +40,15 @@ export class UserService {
       throw error;
     }
   }
+
+  // Implement the findByEmail method
+  async findByEmail(email: string) {
+    const user = await this.userRepository.findOne({
+      where: {
+        email,
+      },
+    });
+
+    return user;
+  }
 }

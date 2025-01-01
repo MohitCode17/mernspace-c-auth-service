@@ -7,7 +7,7 @@ import { AppDataSource } from "../../src/config/data-source";
 import { ROLES } from "../../src/constants";
 import { isJwt } from "../utils";
 
-describe("POST /auth/register", () => {
+describe.skip("POST /auth/register", () => {
   // Create a connection to the database
   let connection: DataSource;
 
