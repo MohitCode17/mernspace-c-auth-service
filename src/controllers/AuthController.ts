@@ -87,6 +87,13 @@ export class AuthController {
   }
 
   async login(req: RegisterUserRequest, res: Response, next: NextFunction) {
+    // Validate the request
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      res.status(400).json({ errors: result.array() });
+      return;
+    }
+
     // Get data from body
     const { email, password } = req.body;
 
