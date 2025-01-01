@@ -26,6 +26,59 @@ describe("POST /auth/login", () => {
   });
 
   describe("Given all fields", () => {
+    it("should return 200 status code if login is successful", async () => {
+      // Arrange
+      const userData = {
+        firstName: "Mohit",
+        lastName: "Gupta",
+        email: "mohit@mern.space",
+        password: "password",
+      };
+
+      const hashPassword = await bcrypt.hash(userData.password, 10);
+      const userRepository = connection.getRepository(User);
+      await userRepository.save({
+        ...userData,
+        password: hashPassword,
+        role: ROLES.CUSTOMER,
+      });
+
+      // Act
+      const response = await request(app).post("/auth/login").send({
+        email: userData.email,
+        password: userData.password,
+      });
+
+      // Assert
+      expect(response.statusCode).toBe(200);
+    });
+
+    it("should be return an id of logged in user", async () => {
+      // Arrange
+      const userData = {
+        firstName: "Mohit",
+        lastName: "Gupta",
+        email: "mohit@mern.space",
+        password: "password",
+      };
+
+      const hashPassword = await bcrypt.hash(userData.password, 10);
+      const userRepository = connection.getRepository(User);
+      await userRepository.save({
+        ...userData,
+        password: hashPassword,
+        role: ROLES.CUSTOMER,
+      });
+
+      // Act
+      const response = await request(app)
+        .post("/auth/login")
+        .send({ email: userData.email, password: userData.password });
+
+      // Assert
+      expect(response.body).toHaveProperty("id");
+    });
+
     it("should return 400 status code if email or password is wrong", async () => {
       // Arrange
       const userData = {

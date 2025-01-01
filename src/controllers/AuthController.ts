@@ -111,7 +111,7 @@ export class AuthController {
         return;
       }
       // Compare the password
-      const passwordMatch = this.credentialService.comparePassword(
+      const passwordMatch = await this.credentialService.comparePassword(
         password,
         user.password,
       );
@@ -155,7 +155,7 @@ export class AuthController {
         httpOnly: true, // This cookie can't be accessed by JavaScript
       });
 
-      res.status(400).send();
+      res.status(200).json({ id: user.id });
     } catch (err) {
       next(err);
       return;
