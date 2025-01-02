@@ -4,10 +4,12 @@ import express, { NextFunction, Request, Response } from "express";
 import logger from "./config/logger";
 import { HttpError } from "http-errors";
 import authRouter from "./routes/auth";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
 // Middlewares
+app.use(cookieParser());
 app.use(express.json());
 
 app.get("/", (req, res) => {
