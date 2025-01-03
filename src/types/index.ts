@@ -15,7 +15,11 @@ export interface RegisterUserRequest extends Request {
 
 export interface AuthRequest extends Request {
   auth: {
-    id: number;
+    sub: number;
     role: string;
   };
 }
+
+export type AuthCookie = {
+  accessToken: string;
+};

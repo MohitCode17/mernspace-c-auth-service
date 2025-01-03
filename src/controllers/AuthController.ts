@@ -61,7 +61,7 @@ export class AuthController {
       // Generate the refresh token
       const refreshToken = this.tokenService.generateRefreshToken({
         ...payload,
-        id: newRefreshToken.id,
+        id: String(newRefreshToken.id),
       });
 
       // Set the cookies
@@ -122,7 +122,7 @@ export class AuthController {
         return;
       }
 
-      // Generate the payload for the access token
+      // Generate the payload
       const payload: JwtPayload = {
         sub: String(user.id),
         role: user.role,
@@ -137,8 +137,11 @@ export class AuthController {
       // Generate the refresh token
       const refreshToken = this.tokenService.generateRefreshToken({
         ...payload,
-        id: newRefreshToken.id,
+        id: String(newRefreshToken.id),
       });
+
+      console.log("AccessToken", accessToken);
+      console.log("RefreshToken", refreshToken);
 
       // Set the cookies
       res.cookie("accessToken", accessToken, {
@@ -154,7 +157,9 @@ export class AuthController {
         maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
         httpOnly: true, // This cookie can't be accessed by JavaScript
       });
+
       this.logger.info("User has been logged in", { id: user.id });
+
       res.status(200).json({ id: user.id });
     } catch (err) {
       next(err);
@@ -163,7 +168,7 @@ export class AuthController {
   }
 
   async self(req: AuthRequest, res: Response) {
-    const user = await this.userService.findById(req.auth.id);
+    const user = await this.userService.findById(Number(req.auth.sub));
     res.json({ ...user, password: undefined });
   }
 }
