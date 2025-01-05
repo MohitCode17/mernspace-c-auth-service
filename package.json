@@ -12,7 +12,8 @@
     "test": "jest --watch --runInBand",
     "prepare": "husky",
     "start": "ts-node src/index.ts",
-    "typeorm": "typeorm-ts-node-commonjs"
+    "migration:generate": "typeorm-ts-node-commonjs migration:generate ./src/migration/migration -d ./src/config/data-source.ts",
+    "migration:run": "typeorm-ts-node-commonjs migration:run -d ./src/config/data-source.ts"
   },
   "author": "Mohit Gupta <mohitgupta1630.mg@gmail.com>",
   "license": "ISC",
