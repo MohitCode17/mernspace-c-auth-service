@@ -14,4 +14,8 @@ export class TenantService {
       throw error;
     }
   }
+
+  async getAll() {
+    return await this.tenantRepository.find();
+  }
 }

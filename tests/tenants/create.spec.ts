@@ -119,6 +119,36 @@ describe("POST /tenants", () => {
       expect(response.statusCode).toBe(403);
       expect(tenants).toHaveLength(0);
     });
+
+    it("should return all tenants list", async () => {
+      // Arrange
+      const tenantRepo = connection.getRepository(Tenant);
+
+      const tenant1 = tenantRepo.create({
+        name: "Tenant 1",
+        address: "Address 1",
+      });
+
+      const tenant2 = tenantRepo.create({
+        name: "Tenant 2",
+        address: "Address 2",
+      });
+
+      await tenantRepo.save([tenant1, tenant2]);
+
+      // Act
+      const response = await request(app).get("/tenants");
+
+      // Assert
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveLength(2);
+      expect(response.body).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ name: "Tenant 1", address: "Address 1" }),
+          expect.objectContaining({ name: "Tenant 2", address: "Address 2" }),
+        ]),
+      );
+    });
   });
 
   describe("Fields are missing", () => {
