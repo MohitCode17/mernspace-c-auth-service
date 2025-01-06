@@ -26,4 +26,8 @@ export class TenantService {
   async update(tenantId: number, tenantData: ITenantData) {
     return await this.tenantRepository.update(tenantId, tenantData);
   }
+
+  async deleteById(tenantId: number) {
+    return await this.tenantRepository.delete(tenantId);
+  }
 }
