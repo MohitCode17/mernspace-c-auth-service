@@ -28,4 +28,8 @@ router.get("/", (req: Request, res: Response, next: NextFunction) =>
   tenantController.getAll(req, res, next),
 );
 
+router.get("/:id", (req: Request, res: Response, next: NextFunction) =>
+  tenantController.getOne(req, res, next),
+);
+
 export default router;
