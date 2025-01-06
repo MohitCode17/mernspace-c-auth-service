@@ -120,4 +120,26 @@ describe("POST /tenants", () => {
       expect(tenants).toHaveLength(0);
     });
   });
+
+  describe("Fields are missing", () => {
+    it("should return 400 status code if tenant name and address missing", async () => {
+      // Arrange
+      const tenantData = {
+        name: "",
+        address: "",
+      };
+
+      // Act
+      const response = await request(app)
+        .post("/tenants")
+        .set("Cookie", [`accessToken=${adminToken}`])
+        .send(tenantData);
+
+      // Assert
+      expect(response.statusCode).toBe(400);
+      const tenantRepo = connection.getRepository(Tenant);
+      const tenants = await tenantRepo.find();
+      expect(tenants).toHaveLength(0);
+    });
+  });
 });
