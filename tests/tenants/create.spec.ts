@@ -173,6 +173,41 @@ describe("POST /tenants", () => {
         address: "Address 1",
       });
     });
+
+    it("should allow only an admin to update a tenant", async () => {
+      // Arrange
+      const tenantRepo = connection.getRepository(Tenant);
+
+      const tenant = tenantRepo.create({
+        id: 1,
+        name: "Tenant 1",
+        address: "Address 1",
+      });
+
+      await tenantRepo.save(tenant);
+
+      const updatedData = {
+        name: "Updated tenant name",
+        address: "Updated tenant address",
+      };
+
+      // Act
+      const response = await request(app)
+        .patch(`/tenants/${tenant.id}`)
+        .set("Cookie", [`accessToken=${adminToken}`])
+        .send(updatedData);
+
+      const updatedTenant = await tenantRepo.findOneBy({ id: tenant.id });
+
+      // Assert
+      expect(response.statusCode).toBe(200);
+      expect(updatedTenant).toEqual(
+        expect.objectContaining({
+          name: updatedData.name,
+          address: updatedData.address,
+        }),
+      );
+    });
   });
 
   describe("Fields are missing", () => {

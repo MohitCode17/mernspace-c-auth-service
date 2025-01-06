@@ -32,4 +32,12 @@ router.get("/:id", (req: Request, res: Response, next: NextFunction) =>
   tenantController.getOne(req, res, next),
 );
 
+router.patch(
+  "/:id",
+  authenticate,
+  canAccess([ROLES.ADMIN]),
+  (req: Request, res: Response, next: NextFunction) =>
+    tenantController.update(req, res, next),
+);
+
 export default router;
