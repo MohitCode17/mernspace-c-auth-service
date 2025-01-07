@@ -48,4 +48,12 @@ router.patch(
     userController.update(req, res, next),
 );
 
+router.delete(
+  "/:id",
+  authenticate,
+  canAccess([ROLES.ADMIN]),
+  (req: Request, res: Response, next: NextFunction) =>
+    userController.destroy(req, res, next),
+);
+
 export default router;

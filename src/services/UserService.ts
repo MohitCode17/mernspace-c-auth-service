@@ -64,4 +64,8 @@ export class UserService {
   async update(userId: number, userData: LimitedUserData) {
     return await this.userRepository.update(userId, userData);
   }
+
+  async deleteById(userId: number) {
+    return this.userRepository.delete(userId);
+  }
 }
