@@ -38,3 +38,7 @@ export interface ITenantData {
 export interface CreateTenantRequest extends Request {
   body: ITenantData;
 }
+
+export interface CreateUserRequest extends Request {
+  body: UserData;
+}

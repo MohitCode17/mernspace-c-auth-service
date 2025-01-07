@@ -4,6 +4,7 @@ import request from "supertest";
 import createJWKSMock from "mock-jwks";
 import app from "../../src/app";
 import { ROLES } from "../../src/constants";
+import { User } from "../../src/entity/User";
 
 describe("POST /users", () => {
   // Create a connection to the database
@@ -52,6 +53,32 @@ describe("POST /users", () => {
         .send(userData);
 
       expect(response.statusCode).toBe(201);
+    });
+
+    it("should persist user in the database", async () => {
+      const adminToken = jwks.token({
+        sub: "1",
+        role: ROLES.ADMIN,
+      });
+
+      const userData = {
+        firstName: "Mohit",
+        lastName: "Gupta",
+        email: "mohit@mern.space",
+        password: "password",
+        tenantId: 1,
+      };
+
+      await request(app)
+        .post("/users")
+        .set("Cookie", [`accessToken=${adminToken}`])
+        .send(userData);
+
+      const userRepository = connection.getRepository(User);
+      const users = await userRepository.find();
+
+      expect(users).toHaveLength(1);
+      expect(users[0].email).toBe(userData.email);
     });
   });
 });
