@@ -6,6 +6,7 @@ export interface UserData {
   lastName: string;
   email: string;
   password: string;
+  role: string;
 }
 
 // Define the request interface

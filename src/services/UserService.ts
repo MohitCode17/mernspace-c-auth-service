@@ -2,7 +2,6 @@ import { Repository } from "typeorm";
 import { User } from "../entity/User";
 import { UserData } from "../types";
 import createHttpError from "http-errors";
-import { ROLES } from "../constants";
 import bcrypt from "bcrypt";
 
 // Define the user service
@@ -11,7 +10,7 @@ export class UserService {
   constructor(private userRepository: Repository<User>) {}
 
   // Implement the create method
-  async create({ firstName, lastName, email, password }: UserData) {
+  async create({ firstName, lastName, email, password, role }: UserData) {
     // Check if the user already exists in the database by email
     const user = await this.userRepository.findOne({ where: { email: email } });
 
@@ -31,7 +30,7 @@ export class UserService {
         lastName,
         email,
         password: hashedPassword,
-        role: ROLES.CUSTOMER,
+        role,
       });
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
