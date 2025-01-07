@@ -40,4 +40,12 @@ router.get(
     userController.getOne(req, res, next),
 );
 
+router.patch(
+  "/:id",
+  authenticate,
+  canAccess([ROLES.ADMIN]),
+  (req: Request, res: Response, next: NextFunction) =>
+    userController.update(req, res, next),
+);
+
 export default router;
