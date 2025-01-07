@@ -15,7 +15,7 @@ export class User {
   @Column({ unique: true }) // Column in the database with unique constraint
   email: string; // Email of the user
 
-  @Column() // Column in the database
+  @Column({ select: false }) // Column in the database
   password: string; // Password of the user
 
   @Column()

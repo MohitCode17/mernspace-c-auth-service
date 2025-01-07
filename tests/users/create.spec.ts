@@ -5,6 +5,8 @@ import createJWKSMock from "mock-jwks";
 import app from "../../src/app";
 import { ROLES } from "../../src/constants";
 import { User } from "../../src/entity/User";
+import { Tenant } from "../../src/entity/Tenant";
+import { createTenant } from "../utils";
 
 describe("POST /users", () => {
   // Create a connection to the database
@@ -34,6 +36,8 @@ describe("POST /users", () => {
 
   describe("Given all fields", () => {
     it("should return 201 status code", async () => {
+      const tenant = await createTenant(connection.getRepository(Tenant));
+
       const adminToken = jwks.token({
         sub: "1",
         role: ROLES.ADMIN,
@@ -44,7 +48,8 @@ describe("POST /users", () => {
         lastName: "Gupta",
         email: "mohit@mern.space",
         password: "password",
-        tenantId: 1,
+        tenantId: tenant.id,
+        role: ROLES.MANAGER,
       };
 
       const response = await request(app)
@@ -56,6 +61,8 @@ describe("POST /users", () => {
     });
 
     it("should persist user in the database", async () => {
+      const tenant = await createTenant(connection.getRepository(Tenant));
+
       const adminToken = jwks.token({
         sub: "1",
         role: ROLES.ADMIN,
@@ -66,7 +73,8 @@ describe("POST /users", () => {
         lastName: "Gupta",
         email: "mohit@mern.space",
         password: "password",
-        tenantId: 1,
+        tenantId: tenant.id,
+        role: ROLES.MANAGER,
       };
 
       await request(app)
@@ -82,6 +90,8 @@ describe("POST /users", () => {
     });
 
     it("should create a manager user", async () => {
+      const tenant = await createTenant(connection.getRepository(Tenant));
+
       const adminToken = jwks.token({
         sub: "1",
         role: ROLES.ADMIN,
@@ -92,7 +102,8 @@ describe("POST /users", () => {
         lastName: "Gupta",
         email: "mohit@mern.space",
         password: "password",
-        tenantId: 1,
+        tenantId: tenant.id,
+        role: ROLES.MANAGER,
       };
 
       await request(app)
