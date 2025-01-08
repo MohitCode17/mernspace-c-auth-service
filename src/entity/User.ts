@@ -22,5 +22,5 @@ export class User {
   role: string; // Role of the user
 
   @ManyToOne(() => Tenant)
-  tenant: Tenant;
+  tenant: Tenant | null;
 }

@@ -10,7 +10,14 @@ export class UserService {
   constructor(private userRepository: Repository<User>) {}
 
   // Implement the create method
-  async create({ firstName, lastName, email, password, role }: UserData) {
+  async create({
+    firstName,
+    lastName,
+    email,
+    password,
+    role,
+    tenantId,
+  }: UserData) {
     // Check if the user already exists in the database by email
     const user = await this.userRepository.findOne({ where: { email: email } });
 
@@ -31,6 +38,7 @@ export class UserService {
         email,
         password: hashedPassword,
         role,
+        tenant: tenantId ? { id: tenantId } : undefined,
       });
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -62,8 +70,12 @@ export class UserService {
     return await this.userRepository.find();
   }
 
-  async update(userId: number, userData: LimitedUserData) {
-    return await this.userRepository.update(userId, userData);
+  async update(userId: number, { firstName, lastName, role }: LimitedUserData) {
+    return await this.userRepository.update(userId, {
+      firstName,
+      lastName,
+      role,
+    });
   }
 
   async deleteById(userId: number) {

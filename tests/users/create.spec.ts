@@ -117,5 +117,37 @@ describe("POST /users", () => {
       expect(users).toHaveLength(1);
       expect(users[0].role).toBe(ROLES.MANAGER);
     });
+
+    it("should return 403 if non admin user tries to create a user", async () => {
+      // Create tenant first
+      const tenant = await createTenant(connection.getRepository(Tenant));
+
+      const nonAdminToken = jwks.token({
+        sub: "1",
+        role: ROLES.MANAGER,
+      });
+
+      const userData = {
+        firstName: "Mohit",
+        lastName: "Gupta",
+        email: "mohit@mern.space",
+        password: "password",
+        tenantId: tenant.id,
+        role: ROLES.MANAGER,
+      };
+
+      // Add token to cookie
+      const response = await request(app)
+        .post("/users")
+        .set("Cookie", [`accessToken=${nonAdminToken}`])
+        .send(userData);
+
+      expect(response.statusCode).toBe(403);
+
+      const userRepository = connection.getRepository(User);
+      const users = await userRepository.find();
+
+      expect(users).toHaveLength(0);
+    });
   });
 });

@@ -7,6 +7,7 @@ export interface UserData {
   email: string;
   password: string;
   role: string;
+  tenantId?: number;
 }
 
 // Define the request interface
