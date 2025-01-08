@@ -3,19 +3,28 @@ import { AppDataSource } from "../../src/config/data-source";
 import request from "supertest";
 import app from "../../src/app";
 import { Tenant } from "../../src/entity/Tenant";
+import createJWKSMock from "mock-jwks";
+import { ROLES } from "../../src/constants";
 
 describe("GET /tenants", () => {
   // Create a connection to the database
   let connection: DataSource;
+  let jwks: ReturnType<typeof createJWKSMock>;
 
   beforeAll(async () => {
+    jwks = createJWKSMock("http://localhost:5501");
     connection = await AppDataSource.initialize();
   });
 
   // Run this before each test
   beforeEach(async () => {
+    jwks.start();
     await connection.dropDatabase();
     await connection.synchronize();
+  });
+
+  afterEach(() => {
+    jwks.stop();
   });
 
   // Run this after all tests
@@ -55,6 +64,11 @@ describe("GET /tenants", () => {
     });
 
     it("should return tenant by id", async () => {
+      const adminToken = jwks.token({
+        sub: "1",
+        role: ROLES.ADMIN,
+      });
+
       // Arrange
       const tenantRepo = connection.getRepository(Tenant);
 
@@ -67,7 +81,10 @@ describe("GET /tenants", () => {
       await tenantRepo.save(tenant);
 
       // Act
-      const response = await request(app).get(`/tenants/${tenant.id}`);
+      const response = await request(app)
+        .get(`/tenants/${tenant.id}`)
+        .set("Cookie", [`accessToken=${adminToken}`])
+        .send();
 
       // Assert
       expect(response.statusCode).toBe(200);
