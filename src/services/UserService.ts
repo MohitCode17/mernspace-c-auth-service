@@ -1,6 +1,6 @@
 import { Repository } from "typeorm";
 import { User } from "../entity/User";
-import { LimitedUserData, UserData } from "../types";
+import { LimitedUserData, UserData, UserQueryParams } from "../types";
 import createHttpError from "http-errors";
 import bcrypt from "bcrypt";
 
@@ -69,8 +69,16 @@ export class UserService {
     });
   }
 
-  async getAll() {
-    return await this.userRepository.find();
+  async getAll(validateQuery: UserQueryParams) {
+    // Query builder
+    const queryBuilder = this.userRepository.createQueryBuilder();
+
+    const result = await queryBuilder
+      .skip((validateQuery.currentPage - 1) * validateQuery.perPage)
+      .take(validateQuery.perPage)
+      .getManyAndCount();
+
+    return result;
   }
 
   async update(userId: number, { firstName, lastName, role }: LimitedUserData) {
