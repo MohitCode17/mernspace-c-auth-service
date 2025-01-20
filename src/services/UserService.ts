@@ -1,4 +1,4 @@
-import { Repository } from "typeorm";
+import { Brackets, Repository } from "typeorm";
 import { User } from "../entity/User";
 import { LimitedUserData, UserData, UserQueryParams } from "../types";
 import createHttpError from "http-errors";
@@ -71,11 +71,38 @@ export class UserService {
 
   async getAll(validateQuery: UserQueryParams) {
     // Query builder
-    const queryBuilder = this.userRepository.createQueryBuilder();
+    const queryBuilder = this.userRepository.createQueryBuilder("user"); // passing user as alias
+
+    if (validateQuery.q) {
+      const searchTerm = `%${validateQuery.q}%`; // SQL Query
+
+      // find search terms which matches with firstName, lastName, email, etc.(Case in-sensitive)
+      queryBuilder.where(
+        new Brackets((qb) => {
+          qb.where("CONCAT(user.firstName, ' ', user.lastName) ILike :q", {
+            q: searchTerm,
+          }).orWhere("user.email ILike :q", { q: searchTerm });
+
+          // qb.where("user.firstName ILike :q", { q: searchTerm })
+          //   .orWhere("user.lastName ILike :q", { q: searchTerm })
+          //   .orWhere("user.email ILike :q", { q: searchTerm });
+        }),
+      );
+      // .where("user.firstName ILike :q", { q: searchTerm })
+      // .orWhere("user.lastName ILike :q", { q: searchTerm })
+      // .orWhere("user.email ILike :q", { q: searchTerm });
+    }
+
+    if (validateQuery.role) {
+      queryBuilder.andWhere("role = :role", {
+        role: validateQuery.role,
+      });
+    }
 
     const result = await queryBuilder
       .skip((validateQuery.currentPage - 1) * validateQuery.perPage)
       .take(validateQuery.perPage)
+      .orderBy("user.id", "DESC") // keep neweast created user at first
       .getManyAndCount();
 
     return result;
