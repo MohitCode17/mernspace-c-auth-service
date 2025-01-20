@@ -9,6 +9,7 @@ import { User } from "../entity/User";
 import createUserValidator from "../validators/create-user-validator";
 import logger from "../config/logger";
 import listUsersValidator from "../validators/list-users-validator";
+import updateUserValidator from "../validators/update-user-validator";
 
 const router = express.Router();
 
@@ -46,6 +47,7 @@ router.patch(
   "/:id",
   authenticate,
   canAccess([ROLES.ADMIN]),
+  updateUserValidator,
   (req: Request, res: Response, next: NextFunction) =>
     userController.update(req, res, next),
 );

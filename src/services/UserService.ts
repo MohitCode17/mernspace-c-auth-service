@@ -109,11 +109,16 @@ export class UserService {
     return result;
   }
 
-  async update(userId: number, { firstName, lastName, role }: LimitedUserData) {
+  async update(
+    userId: number,
+    { firstName, lastName, role, email, tenantId }: LimitedUserData,
+  ) {
     return await this.userRepository.update(userId, {
       firstName,
       lastName,
       role,
+      email,
+      tenant: tenantId ? { id: tenantId } : null,
     });
   }
 
