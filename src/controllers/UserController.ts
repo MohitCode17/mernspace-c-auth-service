@@ -19,8 +19,7 @@ export class UserController {
     const result = validationResult(req);
 
     if (!result.isEmpty()) {
-      res.status(400).json({ errors: result.array() });
-      return;
+      return next(createHttpError(400, result.array()[0].msg as string));
     }
 
     try {
@@ -91,13 +90,11 @@ export class UserController {
   }
 
   async update(req: UpdateUserRequest, res: Response, next: NextFunction) {
-    // In our project: We are not allowing user to change the email id since it is used as username
     // In our project: We are not allowing admin user to change others password
     const result = validationResult(req);
 
     if (!result.isEmpty()) {
-      res.status(400).json({ errors: result.array() });
-      return;
+      return next(createHttpError(400, result.array()[0].msg as string));
     }
 
     const userId = req.params.id;

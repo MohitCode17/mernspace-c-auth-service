@@ -15,8 +15,7 @@ export class TenantController {
     // Validate the request
     const result = validationResult(req);
     if (!result.isEmpty()) {
-      res.status(400).json({ errors: result.array() });
-      return;
+      return next(createHttpError(400, result.array()[0].msg as string));
     }
 
     // Getting tenant data from body
@@ -74,7 +73,7 @@ export class TenantController {
     // Validate the request
     const result = validationResult(req);
     if (!result.isEmpty()) {
-      res.status(400).json({ errors: result.array() });
+      next(createHttpError(400, result.array()[0].msg as string));
       return;
     }
 
