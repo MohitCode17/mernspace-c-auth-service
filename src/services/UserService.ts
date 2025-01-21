@@ -38,7 +38,7 @@ export class UserService {
         email,
         password: hashedPassword,
         role,
-        tenant: tenantId ? { id: tenantId } : undefined,
+        tenant: tenantId ? { id: tenantId } : null,
       });
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
