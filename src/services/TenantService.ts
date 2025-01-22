@@ -1,5 +1,5 @@
 import { Repository } from "typeorm";
-import { ITenantData } from "../types";
+import { ITenantData, UserQueryParams } from "../types";
 import createHttpError from "http-errors";
 import { Tenant } from "../entity/Tenant";
 
@@ -15,8 +15,16 @@ export class TenantService {
     }
   }
 
-  async getAll() {
-    return await this.tenantRepository.find();
+  async getAll(validateQuery: UserQueryParams) {
+    const queryBuilder = this.tenantRepository.createQueryBuilder("tenant");
+
+    const result = await queryBuilder
+      .skip((validateQuery.currentPage - 1) * validateQuery.perPage)
+      .take(validateQuery.perPage)
+      .orderBy("tenant.id", "DESC") // keep neweast created user at first
+      .getManyAndCount();
+
+    return result;
   }
 
   async getOne(tenantId: number) {

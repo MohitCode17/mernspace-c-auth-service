@@ -8,6 +8,7 @@ import authenticate from "../middlewares/authenticate";
 import { canAccess } from "../middlewares/canAccess";
 import { ROLES } from "../constants";
 import tenantValidator from "../validators/tenant-validator";
+import listUsersValidator from "../validators/list-users-validator";
 
 const router = express.Router();
 
@@ -24,8 +25,11 @@ router.post(
     tenantController.create(req, res, next),
 );
 
-router.get("/", (req: Request, res: Response, next: NextFunction) =>
-  tenantController.getAll(req, res, next),
+router.get(
+  "/",
+  listUsersValidator,
+  (req: Request, res: Response, next: NextFunction) =>
+    tenantController.getAll(req, res, next),
 );
 
 router.get(
@@ -40,6 +44,7 @@ router.patch(
   "/:id",
   authenticate,
   canAccess([ROLES.ADMIN]),
+  tenantValidator,
   (req: Request, res: Response, next: NextFunction) =>
     tenantController.update(req, res, next),
 );
