@@ -18,6 +18,13 @@ export class TenantService {
   async getAll(validateQuery: UserQueryParams) {
     const queryBuilder = this.tenantRepository.createQueryBuilder("tenant");
 
+    if (validateQuery.q) {
+      const searchTerm = `%${validateQuery.q}%`; // SQL Query
+      queryBuilder.where("CONCAT(tenant.name, ' ', tenant.address) ILike :q", {
+        q: searchTerm,
+      });
+    }
+
     const result = await queryBuilder
       .skip((validateQuery.currentPage - 1) * validateQuery.perPage)
       .take(validateQuery.perPage)
