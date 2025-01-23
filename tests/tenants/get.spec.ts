@@ -54,8 +54,8 @@ describe("GET /tenants", () => {
 
       // Assert
       expect(response.statusCode).toBe(200);
-      expect(response.body).toHaveLength(2);
-      expect(response.body).toEqual(
+      expect(response.body.data).toHaveLength(2);
+      expect(response.body.data).toEqual(
         expect.arrayContaining([
           expect.objectContaining({ name: "Tenant 1", address: "Address 1" }),
           expect.objectContaining({ name: "Tenant 2", address: "Address 2" }),
