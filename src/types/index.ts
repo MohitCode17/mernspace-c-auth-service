@@ -21,6 +21,9 @@ export interface AuthRequest extends Request {
     role: string;
     id?: string;
     tenant: string;
+    firstName: string;
+    lastName: string;
+    email: string;
   };
 }
 
