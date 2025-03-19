@@ -8,6 +8,7 @@ import { TokenService } from "../services/TokenService";
 import createHttpError from "http-errors";
 import { CredentialService } from "../services/CredentialService";
 import { ROLES } from "../constants";
+import { Config } from "../config";
 
 export class AuthController {
   // Constructor injection of the UserService, Logger
@@ -74,14 +75,14 @@ export class AuthController {
 
       // Set the cookies
       res.cookie("accessToken", accessToken, {
-        domain: "localhost",
+        domain: Config.MAIN_DOMAIN,
         sameSite: "strict",
         maxAge: 1000 * 60 * 60, // 1 hour
         httpOnly: true, // This cookie can't be accessed by JavaScript
       });
 
       res.cookie("refreshToken", refreshToken, {
-        domain: "localhost",
+        domain: Config.MAIN_DOMAIN,
         sameSite: "strict",
         maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
         httpOnly: true, // This cookie can't be accessed by JavaScript
@@ -154,14 +155,14 @@ export class AuthController {
 
       // Set the cookies
       res.cookie("accessToken", accessToken, {
-        domain: "localhost",
+        domain: Config.MAIN_DOMAIN,
         sameSite: "strict",
         maxAge: 1000 * 60 * 60, // 1 hour
         httpOnly: true, // This cookie can't be accessed by JavaScript
       });
 
       res.cookie("refreshToken", refreshToken, {
-        domain: "localhost",
+        domain: Config.MAIN_DOMAIN,
         sameSite: "strict",
         maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
         httpOnly: true, // This cookie can't be accessed by JavaScript
@@ -220,14 +221,14 @@ export class AuthController {
 
       // Send tokens to cookie
       res.cookie("accessToken", accessToken, {
-        domain: "localhost",
+        domain: Config.MAIN_DOMAIN,
         sameSite: "strict",
         maxAge: 1000 * 60 * 60, // 1 hour
         httpOnly: true, // This cookie can't be accessed by JavaScript
       });
 
       res.cookie("refreshToken", refreshToken, {
-        domain: "localhost",
+        domain: Config.MAIN_DOMAIN,
         sameSite: "strict",
         maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
         httpOnly: true, // This cookie can't be accessed by JavaScript
